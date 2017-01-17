@@ -20,7 +20,7 @@ var canvas = document.getElementById('canvas'),
 		rippleTotal = 5,
 		rippleTick = 0,
 		// this will time the auto launches of ripples, one launch per 80 loop ticks
-		timerTotal = 80,
+		timerTotal = 70,
 		timerTick = 0,
 		mousedown = false,
 		// mouse x coordinate,
@@ -67,17 +67,17 @@ function Ripple( startingX, startingY, rad ) {
 	}
 	
 	this.angle = Math.atan2( canvasHeight - startingY, canvasWidth - startingX );
-	this.speed = 1.2;
-	this.acceleration = 1.00009;
-	this.borderThickness = 1.0;
+	this.speed = 1.9;
+	this.acceleration = 1.0006;
+	this.borderThickness = 3.0;
 	this.brightness = random( 50, 70 );
+	
 }
 
 // update ripple
 Ripple.prototype.update = function( index ) {
 	// remove last item in coordinates array
 	this.coordinates.pop();
-	
 	// add current coordinates to the start of the array
 	this.coordinates.unshift( [ this.x, this.y, this.rad ] );
 	
@@ -104,8 +104,8 @@ Ripple.prototype.update = function( index ) {
 		ripples.splice( index, 1 );
 	} else {
 		// target not reached, keep traveling
-		this.rad += (vx + 0.3);
-		this.borderThickness *= 1.02;
+		this.rad += (vx + 2);
+		this.borderThickness *= 1.01;
 		this.lifespan++;
 	}
 }
@@ -113,21 +113,16 @@ Ripple.prototype.update = function( index ) {
 // draw ripple
 Ripple.prototype.draw = function() {
 	ctx.beginPath();
-	// move to the last tracked coordinate in the set, then draw a line to the current x and y
 	ctx.arc(this.coordinates[this.coordinates.length - 1][ 0 ],
 					this.coordinates[ this.coordinates.length - 1][ 1 ], 
 					this.coordinates[this.coordinates.length - 1][ 2], 
 					0, 2 * Math.PI);
-	ctx.shadowBlur=120;
-	ctx.shadowColor='#00093d';
-	if (this.lifespan <= 40) {
-		ctx.strokeStyle='hsl('+242+', '+100+'%, '+this.lifespan+'%)';
-	} 
-	// else if (this.lifespan <= 90) {
-	// 	ctx.strokeStyle='hsl('+242+', '+94+'%, '+(70 - ((this.lifespan)))+'%)';
-	// } 
-	else {
-		ctx.strokeStyle='hsl('+242+', '+100+'%, '+(70 - ((this.lifespan)))+'%)';
+	ctx.shadowBlur=8000;
+	ctx.shadowColor='rgb(4, 0, ' + (160 - this.lifespan) + ')';
+	if (this.lifespan <= 25) {
+		ctx.strokeStyle='hsl('+242+', '+60+'%, '+this.lifespan/.6+'%)';
+	} else {
+		ctx.strokeStyle='hsl('+242+', '+60+'%, '+(55 - ((this.lifespan/1.01)))+'%)';
 	}
 	ctx.lineWidth = this.borderThickness;
 	ctx.stroke();
@@ -152,7 +147,7 @@ function loop() {
 	// loop over each ripple, draw it, update it
 	var i = ripples.length;
 	while(i--) {
-		if (ripples[i].lifespan <= 130) {
+		if (ripples[i].lifespan <= 160) {
 			ripples[i].draw();
 			ripples[i].update(i);
 		} else {
@@ -172,10 +167,8 @@ function loop() {
 		
 	}
 	
-	// limit the rate at which fireworks get launched when mouse is down
 	if( rippleTick >= rippleTotal ) {
 		if( mousedown ) {
-			// start the firework at the bottom middle of the screen, then set the current mouse coordinates as the target
 			ripples.push( new Ripple(mx, my, 1) );
 			rippleTick = 0;
 		}
