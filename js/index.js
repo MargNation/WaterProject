@@ -138,7 +138,7 @@ function loop() {
 	// setting the composite operation to destination-out will allow us to clear the canvas at a specific opacity, rather than wiping it entirely
 	ctx.globalCompositeOperation = 'destination-out';
 	// decrease the alpha property to create more prominent trails
-	ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+	ctx.fillStyle = 'rgba(0, 0, 0, 0.9)';
 	ctx.fillRect( 0, 0, canvasWidth, canvasHeight );
 	// change the composite operation back to our main mode
 	// lighter creates bright highlight points as the fireworks and particles overlap each other
@@ -147,7 +147,7 @@ function loop() {
 	// loop over each ripple, draw it, update it
 	var i = ripples.length;
 	while(i--) {
-		if (ripples[i].lifespan <= 160) {
+		if (ripples[i].lifespan <= 100) {
 			ripples[i].draw();
 			ripples[i].update(i);
 		} else {
